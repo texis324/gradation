@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>グラデーション ― 慣れと未知のあいだ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#161020;
+    --void-2:#1f1830;
+    --panel:#251d39;
+    --line:rgba(255,255,255,.08);
+    --ink:#f1ece6;
+    --muted:#9b91b0;
+    --familiar:#34c6d9;   /* 慣れ ― 落ち着いた水色 */
+    --fun:#8be06a;        /* 面白い新 ― 新芽の緑 */
+    --tough:#ff6f61;      /* 苦手 ― 強度のコーラル */
+    --gold:#f6c453;       /* 発見・好調 */
+    --warn:#ff5b78;
+    --disp:'Dela Gothic One', system-ui, sans-serif;
+    --body:'Zen Kaku Gothic New', system-ui, -apple-system, 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    font-family:var(--body);
+    color:var(--ink);
+    background:
+      radial-gradient(120% 90% at 15% -10%, #2a1f3d 0%, transparent 55%),
+      radial-gradient(120% 90% at 110% 10%, #1b2c33 0%, transparent 50%),
+      var(--void);
+    min-height:100%;
+    display:flex;
+    justify-content:center;
+    padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+    overflow-x:hidden;
+  }
+  .app{
+    width:100%;
+    max-width:460px;
+    min-height:100dvh;
+    padding:20px 18px 26px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+    position:relative;
+  }
+
+  /* ---- header ---- */
+  header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+  .brand .eyebrow{
+    font-size:10px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--muted);font-weight:700;
+  }
+  .brand h1{
+    font-family:var(--disp);font-size:25px;line-height:1;margin-top:6px;
+    background:linear-gradient(100deg,var(--familiar),var(--fun) 52%,var(--tough));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .day{text-align:right;line-height:1}
+  .day .n{font-family:var(--disp);font-size:30px}
+  .day .lbl{font-size:10px;color:var(--muted);letter-spacing:.18em;margin-top:3px}
+
+  /* ---- hero: growth + spectrum ---- */
+  .hero{
+    position:relative;
+    background:linear-gradient(180deg,var(--void-2),rgba(31,24,48,.4));
+    border:1px solid var(--line);border-radius:20px;
+    padding:18px 18px 20px;
+  }
+  .growth-row{display:flex;align-items:baseline;gap:10px}
+  .growth-row .g{font-family:var(--disp);font-size:46px;line-height:.9;letter-spacing:-.01em}
+  .growth-row .gl{font-size:12px;color:var(--muted);font-weight:700}
+  .growth-row .rank{
+    margin-left:auto;font-size:11px;font-weight:700;color:var(--gold);
+    border:1px solid rgba(246,196,83,.35);border-radius:999px;padding:4px 11px;
+    white-space:nowrap;
+  }
+
+  /* the signature: 慣れ↔未知 spectrum */
+  .spectrum-wrap{margin-top:18px}
+  .spectrum-ends{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);letter-spacing:.12em;margin-bottom:7px;font-weight:700}
+  .spectrum{
+    position:relative;height:12px;border-radius:999px;
+    background:linear-gradient(90deg,var(--familiar),var(--fun) 48%,var(--gold) 70%,var(--tough));
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.25);
+  }
+  .sweet{
+    position:absolute;top:-4px;bottom:-4px;left:22%;width:16%;
+    border-radius:8px;border:1.5px dashed rgba(255,255,255,.55);
+    background:rgba(255,255,255,.06);transition:opacity .3s;
+  }
+  .sweet.lit{
+    border-color:var(--gold);
+    background:rgba(246,196,83,.16);
+    box-shadow:0 0 16px rgba(246,196,83,.45);
+  }
+  .marker{
+    position:absolute;top:50%;left:0%;width:20px;height:20px;border-radius:50%;
+    background:#fff;border:3px solid var(--void);
+    transform:translate(-50%,-50%);
+    box-shadow:0 2px 10px rgba(0,0,0,.5);
+    transition:left .55s cubic-bezier(.22,1,.36,1);
+  }
+  .spectrum-note{font-size:10.5px;color:var(--muted);margin-top:9px;text-align:center;min-height:14px;transition:color .3s}
+  .spectrum-note b{color:var(--gold)}
+
+  /* ---- stat bars ---- */
+  .bars{display:flex;flex-direction:column;gap:11px}
+  .bar .top{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:5px}
+  .bar .top .k{color:var(--muted);font-weight:700;display:flex;align-items:center;gap:6px}
+  .bar .top .dot{width:7px;height:7px;border-radius:50%}
+  .bar .top .v{font-variant-numeric:tabular-nums;font-weight:700}
+  .track{height:9px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden}
+  .fill{height:100%;border-radius:999px;transition:width .5s cubic-bezier(.22,1,.36,1),background .3s}
+  .fill.stamina{background:linear-gradient(90deg,#1f8fa6,var(--familiar))}
+  .fill.mono{background:linear-gradient(90deg,#caa23a,var(--warn))}
+  .fill.found{background:linear-gradient(90deg,var(--fun),var(--gold))}
+
+  /* ---- choices ---- */
+  .choices-h{font-size:11px;letter-spacing:.2em;color:var(--muted);font-weight:700;text-transform:uppercase}
+  .choices{display:flex;flex-direction:column;gap:11px}
+  .card{
+    --c:var(--familiar);
+    position:relative;text-align:left;cursor:pointer;
+    background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:14px 15px;display:flex;align-items:center;gap:14px;
+    color:var(--ink);font-family:inherit;width:100%;
+    transition:transform .14s ease, border-color .2s, box-shadow .2s, opacity .2s;
+    overflow:hidden;
+  }
+  .card::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c);
+  }
+  .card:not(:disabled):hover{border-color:color-mix(in srgb,var(--c) 55%,transparent);box-shadow:0 6px 22px rgba(0,0,0,.35)}
+  .card:not(:disabled):active{transform:scale(.985)}
+  .card:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+  .card:disabled{opacity:.32;cursor:not-allowed}
+  .card .ico{
+    width:38px;height:38px;border-radius:11px;flex:none;
+    display:grid;place-items:center;font-size:17px;
+    background:color-mix(in srgb,var(--c) 22%,transparent);
+    color:var(--c);font-weight:900;
+  }
+  .card .mid{flex:1;min-width:0}
+  .card .type{font-size:11px;color:var(--c);font-weight:700;letter-spacing:.04em}
+  .card .name{font-size:15.5px;font-weight:700;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .card .cost{text-align:right;flex:none}
+  .card .cost .cn{font-weight:700;font-variant-numeric:tabular-nums;font-size:14px}
+  .card .cost .ct{font-size:10px;color:var(--muted);margin-top:2px}
+  .card.fam{--c:var(--familiar)} .card.fun{--c:var(--fun)} .card.tough{--c:var(--tough)}
+
+  /* floaters + toast */
+  .float{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    font-family:var(--disp);font-size:30px;pointer-events:none;z-index:30;
+    text-shadow:0 2px 12px rgba(0,0,0,.6);animation:floatUp 1.05s ease-out forwards;
+  }
+  @keyframes floatUp{0%{opacity:0;transform:translate(-50%,10px) scale(.7)}18%{opacity:1}100%{opacity:0;transform:translate(-50%,-58px) scale(1.05)}}
+  .toast{
+    position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);
+    background:rgba(20,14,28,.96);border:1px solid var(--line);border-radius:13px;
+    padding:11px 16px;font-size:12.5px;max-width:90vw;text-align:center;
+    opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:40;
+    box-shadow:0 10px 30px rgba(0,0,0,.5);
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast b{color:var(--gold)}
+
+  /* ---- overlay (intro + result) ---- */
+  .overlay{
+    position:fixed;inset:0;z-index:50;display:none;
+    background:rgba(12,8,18,.78);backdrop-filter:blur(6px);
+    align-items:center;justify-content:center;padding:22px;
+  }
+  .overlay.show{display:flex}
+  .sheet{
+    width:100%;max-width:420px;background:linear-gradient(180deg,var(--void-2),var(--void));
+    border:1px solid var(--line);border-radius:22px;padding:26px 22px 24px;
+    max-height:92dvh;overflow-y:auto;
+    animation:rise .4s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+  .sheet h2{font-family:var(--disp);font-size:22px;line-height:1.15;margin-bottom:4px;
+    background:linear-gradient(100deg,var(--familiar),var(--fun) 52%,var(--tough));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .sheet .sub{color:var(--muted);font-size:13px;margin-bottom:18px;line-height:1.6}
+  .rules{display:flex;flex-direction:column;gap:11px;margin-bottom:20px}
+  .rule{display:flex;gap:11px;align-items:flex-start;font-size:13px;line-height:1.55}
+  .rule .rc{width:26px;height:26px;border-radius:8px;flex:none;display:grid;place-items:center;font-weight:900;font-size:13px}
+  .rule .rt b{font-weight:700}
+  .rule .rt span{color:var(--muted)}
+  .btn{
+    display:block;width:100%;border:none;cursor:pointer;font-family:inherit;
+    font-weight:700;font-size:15px;color:#16101e;border-radius:14px;padding:15px;
+    background:linear-gradient(100deg,var(--familiar),var(--fun) 55%,var(--gold));
+    transition:transform .14s,filter .2s;
+  }
+  .btn:active{transform:scale(.98)} .btn:hover{filter:brightness(1.06)}
+  .btn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+  /* result specifics */
+  .res-score{text-align:center;margin:6px 0 18px}
+  .res-score .rg{font-family:var(--disp);font-size:54px;line-height:1;
+    background:linear-gradient(100deg,var(--familiar),var(--fun) 52%,var(--gold));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .res-score .rl{font-size:12px;color:var(--muted);margin-top:4px;letter-spacing:.1em}
+  .res-rank{text-align:center;font-size:17px;font-weight:900;margin-bottom:16px}
+  .res-stats{display:flex;gap:10px;margin-bottom:16px}
+  .res-stats .rs{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:12px;padding:11px;text-align:center}
+  .res-stats .rs .rn{font-weight:900;font-size:18px;font-variant-numeric:tabular-nums}
+  .res-stats .rs .rk{font-size:10px;color:var(--muted);margin-top:3px}
+  .res-msg{font-size:13px;line-height:1.7;color:#d8d1e2;background:rgba(255,255,255,.04);
+    border-left:3px solid var(--gold);border-radius:8px;padding:13px 14px;margin-bottom:20px}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important;transition-duration:.001ms !important}
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header>
+    <div class="brand">
+      <div class="eyebrow">慣れと未知のあいだ</div>
+      <h1>グラデーション</h1>
+    </div>
+    <div class="day">
+      <div class="n"><span id="day">1</span><span style="font-size:15px;color:var(--muted)">/30</span></div>
+      <div class="lbl">DAY</div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="growth-row">
+      <div class="g" id="growth">0</div>
+      <div class="gl">成長</div>
+      <div class="rank" id="rankTag">芽生え</div>
+    </div>
+
+    <div class="spectrum-wrap">
+      <div class="spectrum-ends"><span>慣れ</span><span>未知</span></div>
+      <div class="spectrum">
+        <div class="sweet" id="sweet"></div>
+        <div class="marker" id="marker"></div>
+      </div>
+      <div class="spectrum-note" id="specNote">最初の一歩を選ぼう</div>
+    </div>
+  </section>
+
+  <section class="bars">
+    <div class="bar">
+      <div class="top"><span class="k"><span class="dot" style="background:var(--familiar)"></span>スタミナ（脳のエネルギー）</span><span class="v"><span id="staminaV">100</span>/100</span></div>
+      <div class="track"><div class="fill stamina" id="staminaF" style="width:100%"></div></div>
+    </div>
+    <div class="bar">
+      <div class="top"><span class="k"><span class="dot" style="background:var(--warn)"></span>マンネリ</span><span class="v" id="monoV">0%</span></div>
+      <div class="track"><div class="fill mono" id="monoF" style="width:0%"></div></div>
+    </div>
+    <div class="bar">
+      <div class="top"><span class="k"><span class="dot" style="background:var(--gold)"></span>土台（身についたこと）</span><span class="v" id="foundV">×1.0</span></div>
+      <div class="track"><div class="fill found" id="foundF" style="width:0%"></div></div>
+    </div>
+  </section>
+
+  <div class="choices-h">今日、どれをやる？</div>
+  <section class="choices" id="choices"></section>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- intro -->
+<div class="overlay show" id="introOv">
+  <div class="sheet">
+    <h2>慣れと未知のあいだ</h2>
+    <div class="sub">人は放っておくと、慣れたことに戻る。脳の省エネだから自然なこと。でも成長には、少しだけ未知が要る。30日でどこまで伸ばせる？</div>
+    <div class="rules">
+      <div class="rule"><div class="rc" style="background:color-mix(in srgb,var(--familiar) 24%,transparent);color:var(--familiar)">慣</div>
+        <div class="rt"><b>慣れたこと</b>は安い。<span>でも続けすぎるとマンネリで伸びが鈍る。</span></div></div>
+      <div class="rule"><div class="rc" style="background:color-mix(in srgb,var(--fun) 24%,transparent);color:var(--fun)">新</div>
+        <div class="rt"><b>面白い新しいこと</b>は中コスト。<span>好奇心がコストを下げてくれる。マンネリも解消。</span></div></div>
+      <div class="rule"><div class="rc" style="background:color-mix(in srgb,var(--tough) 24%,transparent);color:var(--tough)">苦</div>
+        <div class="rt"><b>苦手なこと</b>は高い。<span>失敗もする。でも当たれば一番伸びる。</span></div></div>
+      <div class="rule"><div class="rc" style="background:color-mix(in srgb,var(--gold) 24%,transparent);color:var(--gold)">代</div>
+        <div class="rt"><b>新しいことは、やがて土台になる。</b><span>今日の未知が、明日の「慣れ」の伸びを底上げする。</span></div></div>
+    </div>
+    <button class="btn" id="startBtn">はじめる</button>
+  </div>
+</div>
+
+<!-- result -->
+<div class="overlay" id="resultOv">
+  <div class="sheet">
+    <h2 id="resTitle">30日、おつかれさま</h2>
+    <div class="res-score">
+      <div class="rg" id="resGrowth">0</div>
+      <div class="rl">TOTAL GROWTH</div>
+    </div>
+    <div class="res-rank" id="resRank"></div>
+    <div class="res-stats">
+      <div class="rs"><div class="rn" id="resRatio">―</div><div class="rk">未知の割合</div></div>
+      <div class="rs"><div class="rn" id="resFound">×1.0</div><div class="rk">最終の土台</div></div>
+      <div class="rs"><div class="rn" id="resOver">0</div><div class="rk">弱点克服</div></div>
+    </div>
+    <div class="res-msg" id="resMsg"></div>
+    <button class="btn" id="againBtn">もう一度（30日）</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const $ = id => document.getElementById(id);
+
+  const POOLS = {
+    fam:  ['いつものスクワット','腕立て伏せ','いつものランニング','いつもの読書','いつもの趣味','慣れたストレッチ','定番の自炊'],
+    fun:  ['音ゲーに挑戦','知らない道を走る','新しいレシピ','違うジャンルの音楽','初見のボドゲ','行ったことない店','興味本位の動画編集'],
+    tough:['苦手な懸垂','興味の薄い分野の勉強','人前で話す練習','嫌いな有酸素','苦手な早起き','面倒な事務作業','避けてた英語']
+  };
+  const MAX_DAY=30, MAX_STAM=100, REGEN=30;
+  const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+
+  let S;
+  function reset(){
+    S={day:1,growth:0,stamina:MAX_STAM,mono:0,found:1,
+       famN:0,newN:0,overcome:0,ended:false,offer:null};
+    newDay();
+  }
+  function newDay(){
+    S.offer={fam:pick(POOLS.fam),fun:pick(POOLS.fun),tough:pick(POOLS.tough)};
+  }
+
+  function noveltyRatio(){const t=S.famN+S.newN;return t? S.newN/t : 0;}
+  function inSweet(){const r=noveltyRatio();return S.famN+S.newN>=3 && r>=0.22 && r<=0.38;}
+  function flowMult(){return inSweet()?1.25:1;}
+
+  const RANKS=[ [0,'芽生え'],[60,'根づき'],[140,'枝ぶり'],[240,'背伸び'],[360,'開花'],[500,'森'] ];
+  function rankOf(g){let r=RANKS[0][1];for(const [t,n] of RANKS){if(g>=t)r=n;}return r;}
+
+  function render(){
+    $('day').textContent=S.day;
+    $('growth').textContent=Math.round(S.growth);
+    $('rankTag').textContent=rankOf(S.growth);
+    $('staminaV').textContent=Math.round(S.stamina);
+    $('staminaF').style.width=(S.stamina/MAX_STAM*100)+'%';
+    $('monoV').textContent=Math.round(S.mono)+'%';
+    $('monoF').style.width=S.mono+'%';
+    $('foundV').textContent='×'+S.found.toFixed(1);
+    $('foundF').style.width=Math.min(100, Math.max(0,(S.found-1)/3*100))+'%';
+
+    const r=noveltyRatio();
+    $('marker').style.left=(S.famN+S.newN? r*100:0)+'%';
+    const lit=inSweet();
+    $('sweet').classList.toggle('lit',lit);
+    const note=$('specNote');
+    if(S.famN+S.newN<3){ note.innerHTML='まだ判断中…数日選ぶと傾向が見える'; }
+    else if(lit){ note.innerHTML='<b>好調</b>：いいバランス。成長に ×1.25'; }
+    else if(r<0.22){ note.innerHTML='慣れ寄り。安全だけど、そろそろ未知を一滴'; }
+    else { note.innerHTML='未知に寄りすぎ。土台を育てる時間も要る'; }
+
+    renderChoices();
+  }
+
+  function renderChoices(){
+    const wrap=$('choices'); wrap.innerHTML='';
+    const defs=[
+      {k:'fam',  cls:'fam',  ico:'慣', type:'慣れたこと',       name:S.offer.fam,  cost:12, tag:'安定'},
+      {k:'fun',  cls:'fun',  ico:'新', type:'面白い新しいこと',  name:S.offer.fun,  cost:26, tag:'発見'},
+      {k:'tough',cls:'tough',ico:'苦', type:'苦手なこと',        name:S.offer.tough,cost:42, tag:'ハイリスク'}
+    ];
+    for(const d of defs){
+      const b=document.createElement('button');
+      b.className='card '+d.cls;
+      b.disabled=S.stamina<d.cost;
+      b.innerHTML=
+        '<div class="ico">'+d.ico+'</div>'+
+        '<div class="mid"><div class="type">'+d.type+'</div><div class="name">'+d.name+'</div></div>'+
+        '<div class="cost"><div class="cn">-'+d.cost+'</div><div class="ct">'+d.tag+'</div></div>';
+      b.addEventListener('click',()=>act(d.k,d.cost,d.name));
+      wrap.appendChild(b);
+    }
+  }
+
+  function floatText(txt,color){
+    const f=document.createElement('div');
+    f.className='float'; f.textContent=txt; f.style.color=color;
+    document.querySelector('.hero').appendChild(f);
+    setTimeout(()=>f.remove(),1100);
+  }
+  let toastT;
+  function toast(html){
+    const t=$('toast'); t.innerHTML=html; t.classList.add('show');
+    clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2600);
+  }
+
+  function act(kind,cost,name){
+    if(S.ended||S.stamina<cost) return;
+    S.stamina-=cost;
+    const fm=flowMult();
+    let gained=0;
+
+    if(kind==='fam'){
+      S.famN++;
+      gained=7*S.found*(1-S.mono/150)*fm;
+      gained=Math.max(1,gained);
+      S.mono=Math.min(100,S.mono+16);
+    }
+    else if(kind==='fun'){
+      S.newN++;
+      let base=6;
+      const discovery=Math.random()<0.25;
+      if(discovery) base+=7;
+      gained=base*fm;
+      S.mono=Math.max(0,S.mono-22);
+      S.found+=0.22;
+      metabolize(name);
+      if(discovery) toast('発見！『'+name+'』が思いがけず刺さった ＋ボーナス');
+    }
+    else { // tough
+      S.newN++;
+      const success=Math.random()<0.5;
+      if(success){
+        gained=12*fm;
+        S.found+=0.40; S.overcome++;
+        S.mono=Math.max(0,S.mono-12);
+        metabolize(name);
+        toast('克服！『'+name+'』をやり切った。土台が太くなった');
+      } else {
+        gained=2*fm;
+        S.found+=0.06;
+        S.mono=Math.min(100,S.mono+8);
+        toast('『'+name+'』は今日はうまくいかず。でも少し学びはある');
+      }
+    }
+
+    gained=Math.round(gained);
+    S.growth+=gained;
+    floatText('+'+gained, kind==='fam'?'var(--familiar)':kind==='fun'?'var(--fun)':'var(--tough)');
+
+    // 日が進む → スタミナ回復
+    S.stamina=Math.min(MAX_STAM,S.stamina+REGEN);
+    S.day++;
+    if(S.day>MAX_DAY){ S.ended=true; render(); setTimeout(showResult,650); return; }
+    newDay();
+    render();
+  }
+
+  function metabolize(name){
+    // 新しいことが「慣れたこと」の候補に昇格＝代謝
+    if(!POOLS.fam.includes(name)) POOLS.fam.push(name);
+  }
+
+  function showResult(){
+    const g=Math.round(S.growth);
+    $('resGrowth').textContent=g;
+    $('resRank').textContent=rankOf(g);
+    const r=noveltyRatio();
+    $('resRatio').textContent=Math.round(r*100)+'%';
+    $('resFound').textContent='×'+S.found.toFixed(1);
+    $('resOver').textContent=S.overcome;
+
+    let msg;
+    if(r<0.15){
+      msg='ほぼ慣れたことだけの30日。楽だし崩れない。でも途中から伸びが鈍ったはず――それがマンネリ。土台に一滴の未知を混ぜると、景色が変わる。';
+    } else if(r>0.5){
+      msg='未知に振り切った30日。刺激は多いけど、スタミナが削れて空回りもあった。蒔いた種を「慣れたこと」で収穫する時間があると、もっと伸びる。';
+    } else if(r>=0.22&&r<=0.38){
+      msg='慣れ約7・未知約3。狙いどおりのバランス。慣れたことで積み上げ、少しの未知で土台を太くする――これが一番現実的で強い。筋トレなら、得意種目を続けつつ苦手を1個だけ。';
+    } else {
+      msg='悪くないバランス。慣れたことを土台に、未知を少しずつ。未知の割合を3割あたりに寄せると「好調」に入って、もう一段伸びる。';
+    }
+    $('resMsg').textContent=msg;
+    $('resultOv').classList.add('show');
+  }
+
+  $('startBtn').addEventListener('click',()=>{ $('introOv').classList.remove('show'); reset(); render(); });
+  $('againBtn').addEventListener('click',()=>{
+    // 代謝で増えた候補を初期化
+    POOLS.fam=['いつものスクワット','腕立て伏せ','いつものランニング','いつもの読書','いつもの趣味','慣れたストレッチ','定番の自炊'];
+    $('resultOv').classList.remove('show'); reset(); render();
+  });
+
+  reset(); render();
+})();
+</script>
+</body>
+</html>
